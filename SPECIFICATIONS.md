@@ -44,7 +44,7 @@ avoid clutter.
 
 ## Collaborative State Machine
 
-![image info](images/memory.pdf)
+![image info](images/memory.jpg)
 
 _Figure 1: An example of a CSM description. Components can have data represented by $\{...\}$._
 
