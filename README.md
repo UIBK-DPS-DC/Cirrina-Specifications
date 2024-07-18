@@ -1,5 +1,7 @@
 # Cirrina-Specifications
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
+
 This repository contains the specifications [^](SPECIFICATIONS.md) of the Collaborative State Machines Language (CSML). These
 specifications are implemented in Cirrina.
 
