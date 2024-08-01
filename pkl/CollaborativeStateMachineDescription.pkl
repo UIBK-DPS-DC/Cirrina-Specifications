@@ -215,10 +215,6 @@ open class TransitionDescription {
 ///
 /// @since CSML 0.1.
 open class GuardDescription {
-    /// The optional name.
-    /// <p>
-    /// If present, can be referenced from within a state machine component when declared as part of the state machine's guards.
-    name: String?
     /// An expression.
     /// <p>
     /// The expression must evaluate to a boolean value.
@@ -252,7 +248,6 @@ class OnTransitionDescription extends TransitionDescription {
 /// An abstract action construct. Represents an action that can be taken in a state machine.
 abstract class ActionDescription {
     type: Type
-    name: String?
 }
 
 typealias Type = "invoke" | "create" | "assign" | "lock" | "unlock" | "raise" | "timeout" | "timeoutReset" | "match"
