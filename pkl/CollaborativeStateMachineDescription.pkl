@@ -82,16 +82,6 @@ open class StateMachineDescription extends StateOrStateMachineDescription {
     localContext: ContextDescription?
     /// The optional lexical declaration of persistent context variables.
     persistentContext: ContextDescription?
-    /// The optional named guards.
-    /// <p>
-    /// The guards declared here may be used inside this state machine by referencing the names.
-    /// </p>
-    guards: Listing<GuardDescription>
-    /// The optional named actions.
-    /// <p>
-    /// The actions declared here may be used inside this state machine by referencing the names.
-    /// </p>
-    actions: Listing<ActionDescription>
 }
 
 abstract class StateOrStateMachineDescription {}
