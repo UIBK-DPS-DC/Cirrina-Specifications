@@ -53,8 +53,6 @@ typealias ExpressionDescription = String
 ///  <tr><td>name</td><td>Unique name</td><td>Yes</td></tr>
 ///  <tr><td>localContext</td><td>Lexical description of the local context</td><td>No</td></tr>
 ///  <tr><td>persistentContext</td><td>Lexical description of the persistent context</td><td>No</td></tr>
-///  <tr><td>guards</td><td>Named guards</td><td>No</td></tr>
-///  <tr><td>actions</td><td>Named actions</td><td>No</td></tr>
 /// </table>
 ///
 /// Example:
