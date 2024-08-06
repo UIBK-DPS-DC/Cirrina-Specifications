@@ -45,11 +45,6 @@ persistentContext: ContextDescription?
 typealias Version = "0.1" | "0.2"
 typealias ExpressionDescription = String
 
-open class StateOrStateMachineDescription {
-    /// The name.
-    name: String
-}
-
 /// State machine construct. Represents a state machine within a collaborative state machine.
 ///
 /// Keywords:
@@ -78,11 +73,16 @@ open class StateMachineDescription extends StateOrStateMachineDescription {
     /// <p>
     /// At least one initial state must be provided.
     /// </p>
-    states: Listing<StateMachineDescription | StateDescription>
+    states: Listing<StateOrStateMachineDescription>
     /// The optional lexical declaration of local context variables.
     localContext: ContextDescription?
     /// The optional lexical declaration of persistent context variables.
     persistentContext: ContextDescription?
+}
+
+open class StateOrStateMachineDescription {
+    /// The name.
+    name: String
 }
 
 /// State construct, represents an atomic state of a state machine.
