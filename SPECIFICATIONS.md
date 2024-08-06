@@ -625,7 +625,6 @@ Various types of action constructs exist in CSML. The following sections specify
 ```
 {
     type: 'invoke'
-    (name: 'action')?
     serviceType: 'serviceTypeName'
     (local: (true|false))?
     (input: [
@@ -668,7 +667,6 @@ The following keywords can/must be provided in addition to the keywords:
 | **Keyword** | **Description**        | **Type**                                          | **Optional**          |
 | ----------- | ---------------------- |---------------------------------------------------| --------------------- |
 | type        | Type of action.        | string                                            | No                    |
-| name        | Name of action.        | string                                            | Yes[\*](#action-name) |
 | serviceType | Service type name.     | string                                            | No                    |
 | local       | Local execution flag.  | boolean                                           | Yes                   |
 | input       | Input data.            | list of [variable](#variable)                     | Yes                   |
@@ -743,7 +741,6 @@ The following keywords can/must be provided in addition to the keywords (create 
 | **Keyword** | **Description**                      | **Type**              | **Optional**          |
 | ----------- | ------------------------------------ |-----------------------| --------------------- |
 | type        | Type of action.                      | string                | No                    |
-| name        | Name of action.                      | string                | Yes[\*](#action-name) |
 | variable    | Variable to create.                  | [variable](#variable) | No                    |
 | persistent  | Whether to create data persistently. | boolean               | Yes                   |
 
@@ -752,7 +749,6 @@ The following keywords can/must be provided in addition to the keywords (assign 
 | **Keyword** | **Description**                  | **Type**                                  | **Optional**          |
 | ----------- | -------------------------------- | ----------------------------------------- | --------------------- |
 | type        | Type of action.                  | string                                    | No                    |
-| name        | Name of action.                  | string                                    | Yes[\*](#action-name) |
 | variable    | Variable reference to assign to. | [variable reference](#variable-reference) | No                    |
 | value       | Value expression.                | [expression](#expression)                 | No                    |
 
@@ -761,7 +757,6 @@ The following keywords can/must be provided in addition to the keywords (delete 
 | **Keyword** | **Description**               | **Type**                                  | **Optional**          |
 | ----------- | ----------------------------- | ----------------------------------------- | --------------------- |
 | type        | Type of action.               | string                                    | No                    |
-| name        | Name of action.               | string                                    | Yes[\*](#action-name) |
 | variable    | Variable reference to delete. | [variable reference](#variable-reference) | No                    |
 
 ##### Data Action Variable
@@ -801,7 +796,6 @@ The following keywords can/must be provided in addition to the keywords (raise a
 | **Keyword** | **Description**     | **Type**        | **Optional**          |
 | ----------- | ------------------- | --------------- | --------------------- |
 | type        | Type of action.     | string          | No                    |
-| name        | Name of action.     | string          | Yes[\*](#action-name) |
 | event       | The event to raise. | [event](#event) | No                    |
 
 ##### Raise Event Action Event
@@ -835,7 +829,6 @@ The following keywords can/must be provided in addition to the keywords (timeout
 | **Keyword** | **Description**     | **Type**                    | **Optional**          |
 | ----------- | ------------------- |-----------------------------| --------------------- |
 | type        | Type of action.     | string                      | No                    |
-| name        | Name of action.     | string                      | Yes[\*](#action-name) |
 | delay       | The event to raise. | [expression](#expression)   | No                    |
 | actions     | The event to raise. | list of [action](#action)   | No                    |
 
@@ -844,7 +837,6 @@ The following keywords can/must be provided in addition to the keywords (timeout
 | **Keyword** | **Description**              | **Type**                    | **Optional**          |
 | ----------- | ---------------------------- | --------------------------- | --------------------- |
 | type        | Type of action.              | string                      | No                    |
-| name        | Name of action.              | string                      | Yes[\*](#action-name) |
 | action      | The timeout action to reset. | [action name](#action-name) | No                    |
 
 ##### Timeout Action Delay
