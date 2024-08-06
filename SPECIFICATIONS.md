@@ -27,8 +27,6 @@ and maintains CSM. A runtime system implementing CSM and CSML is
 CSML uses a serialization language such as JSON to serialize a description. In this document, we will make use
 of a JSON-inspired language. However, CSML is not strictly bound to JSON.
 
-[Cirrina](https://git.uibk.ac.at/informatik/dps/dps-dc-software/cirrina), allows reading CSML descriptions in JSON.
-
 A CSML description consists of _constructs_, such as those describing a collaborative state machine, state
 machine and state. A construct consists of one or multiple _keywords_. When using JSON as a serialization
 language, a construct may be an object and a keyword may be a property. Keywords have values of a certain
@@ -178,28 +176,19 @@ value. The evaluation of an expression, e.g., the supported syntax, is implement
 _Listing 5: A guard construct._
 
 A guard is an expression that evaluates to a boolean value. Guards are used within transitions, to determine
-whether a transition is taken. Guard can be referenced by name when declared as named guards in a state
-machine.
+whether a transition is taken.
 
 The following keywords can/must be provided in addition to the keywords:
 
 | **Keyword** | **Description**       | **Type** | **Optional**         |
 | ----------- | --------------------- | -------- |----------------------|
 | expression  | The guard expression. | string   | No                   |
-| name        | The guard name.       | string   | Yes[\*](#guard-name) |
 
 #### Guard Expression
 
 The _expression_ keyword specifies the guard expression.
 
 - The guard expression must evaluate to a boolean value.
-
-#### Guard Name
-
-The _name_ keyword specifies the name of the guard. The guard name is used to reference the guard when a
-guard is not declared in line.
-
-- The named guards of a state machine must have a name.
 
 ### Collaborative State Machine
 
@@ -292,18 +281,13 @@ machine, see [dynamic extent](#data-model-manipulation-and-scope).
 {
     name: 'SM2'
     states: [
-        {...(state|stateMachine)}+
+        {...(state)}+
+    ]
+    stateMachines: [
+        {...(stateMachine)}+
     ]
     (localData: {...data})?
     (persistentData: {...data})?
-    (guards: [
-        {...guard}*
-    ])?
-    (actions: [
-        {...action}*
-    ])?
-    (extends: {...stateMachine.name})?
-    (abstract: (true|false))?
 }
 ```
 
@@ -313,23 +297,19 @@ The purpose of state machines is to model event-driven execution behavior in the
 enabling the transitioning between states or accommodating nested state machines. Nested state machines
 allow for expressing concurrent behavior within a state machine, enabling observation and intervention in the
 execution behavior of the parent state machine. They start simultaneously with the parent state machine. A
-state machine can declare named guards and actions referenced by the specified name to avoid code duplication
-and contain one or more states that can be reached through state transitions. At any given time, only one
+state machine can contain one or more states that can be reached through state transitions. At any given time, only one
 state within a state machine is considered active, rendering all other states within that state machine
 inactive. Like the collaborative state machine, local and persistent data can be declared.
 
 The following keywords can/must be provided in addition to the keywords:
 
-| **Keyword**    | **Description**                             | **Type**                                                   | **Optional** |
-| -------------- | ------------------------------------------- | ---------------------------------------------------------- | ------------ |
-| name           | Name of the state machine.                  | string                                                     | No           |
-| states         | Collection of states.                       | list of [state](#state) or [state machine](#state-machine) | No           |
-| localData      | Local data.                                 | [data](#data)                                              | Yes          |
-| persistentData | Persistent data.                            | [data](#data)                                              | Yes          |
-| guards         | Named guards within the state machine.      | list of [guard](#guard)                                    | Yes          |
-| actions        | Named actions within the state machine.     | list of [action](#action)                                  | Yes          |
-| extends        | Name of an extended state machine.          | [stateMachine.name](#state-machine-name)                   | Yes          |
-| abstract       | Abstract flag of this state machine.        | boolean                                                    | Yes          |
+| **Keyword**    | **Description**                         | **Type**                                | **Optional** |
+|----------------|-----------------------------------------|-----------------------------------------| ------------ |
+| name           | Name of the state machine.              | string                                  | No           |
+| states         | Collection of states.                   | list of [state](#state)                 | No           |
+| stateMachines  | Collection of state machines.           | list of [state machine](#state-machine) | No           |
+| localData      | Local data.                             | [data](#data)                           | Yes          |
+| persistentData | Persistent data.                        | [data](#data)                           | Yes          |
 
 #### State Machine Name
 
@@ -340,9 +320,8 @@ addressed using its name at runtime
 
 #### State Machine States
 
-The _states_ keyword is used to specify the collection of states included in the state machine. States may be
-either atomic states or nested state machines. Atomic states are described using the [state](#state)
-construct, nested state machines are described using the [state machine](#state-machine) construct.
+The _states_ keyword is used to specify the collection of atomic states included in the state machine. Atomic 
+states are described using the [state](#state) construct.
 
 - At least one state must be declared.
 - [State names](#state-name) must be unique.
@@ -351,50 +330,17 @@ construct, nested state machines are described using the [state machine](#state-
 - Terminal states must not have outward transitions.
 - Every state must be reachable (it must have a transition leading into it, or it must be the initial state).
 
+#### State Machine Nested State Machines
+
+The _stateMachines_ keyword is used to specify the collection of nested state machines. Nested state machines 
+are described using the [state machine](#state-machine) construct.
+
 #### State Machine Local/Persistent Data
 
 The _localData_ and _persistentData_ keywords allow for _lexically_ declaring respectively the local and
 persistent data at the state machine level. Data described at the state machine level is accessible from the
 state machine and any component hierarchically below it, see
 [dynamic extent](#data-model-manipulation-and-scope).
-
-#### State Machine Named Guards
-
-The _guards_ keyword specifies the state machine's named guards. Named guards are referenced by name and
-promote code-reusability. Instead of duplicating a guard condition several times, it may be declared once and
-referenced from the state machine and any component hierarchically below it, see
-[dynamic extent](#data-model-manipulation-and-scope).
-
-- A named guard must have a name.
-
-#### State Machine Named Actions
-
-The _actions_ keyword specifies the state machine's named actions. Named actions are referenced by name and
-promote code-reusability. Instead of duplicating an action several times, it may be declared once and
-referenced from the state machine and any component hierarchically below it, see
-[dynamic extent](#data-model-manipulation-and-scope).
-
-- A named action must have a name.
-
-#### State Machine Extends
-
-The _extends_ keyword specifies the state machine that is extended through [inheritance](#state-machine-inheritance). 
-A state machine which extends another state machine inherits all its properties and behaviors including states, 
-local/persistent context, named actions, and named guards. A derived state machine may also override or add new 
-properties and behaviors.
-
-- The base state machine defined within _extends_ must exist and must be defined before the derived state machine in 
-its hierarchy.
-
-#### State Machine Abstract
-
-The _abstract_ keyword specifies whether the state machine is [abstract](#state-machine-abstraction). Abstract state
-machines can have abstract states.
-
-- An abstract state machine can never be instantiated, but it can be extended through the _extends_ keyword. 
-- If an abstract state machine is nested it is not instantiated during the instantiation of the nested state machines.
-- A non-abstract state machine which extends an abstract state machine must implement its abstract states within the 
-_states_ collection.
 
 ### State
 
@@ -404,16 +350,16 @@ _states_ collection.
     (initial: (true|false))?
     (terminal: (true|false))?
     (entry: [
-        {...(action.name|action)}*
+        {...(action)}*
     ])?
     (exit: [
-        {...(action.name|action)}*
+        {...(action)}*
     ])?
     (while: [
-        {...(action.name|action)}*
+        {...(action)}*
     ])?
     (after: [
-        {...(action.name|action)}*
+        {...(action)}*
     ])?
     (on: [
         {...(onTransition)}*
@@ -424,8 +370,6 @@ _states_ collection.
     (localData: {...data})?
     (persistentData: {...data})?
     (staticData: {...data})?
-    (virtual: (true|false))?
-    (abstract: (true|false))?
 }
 ```
 
@@ -448,22 +392,20 @@ between exiting and re-entering the state.
 
 The following keywords can/must be provided in addition to the keywords:
 
-| **Keyword**    | **Description**             | **Type**                                                                                       | **Optional** |
-| -------------- | --------------------------- |------------------------------------------------------------------------------------------------| ------------ |
-| name           | Name of the state.          | string                                                                                         | No           |
-| initial        | Initial flag of the state.  | boolean                                                                                        | Yes          |
-| terminal       | Terminal flag of the state. | boolean                                                                                        | Yes          |
-| entry          | Entry actions.              | list of [action name](#state-machine-named-actions) or [action](#action)                       | Yes          |
-| exit           | Exit actions.               | list of [action name](#state-machine-named-actions) or [action](#action)                       | Yes          |
-| while          | While actions.              | list of [action name](#state-machine-named-actions) or [action](#action)                       | Yes          |
-| after          | After actions.              | list of [action name](#state-machine-named-actions) or [timeout action](#timeout-reset-action) | Yes          |
-| on             | On event transitions.       | list of [on-transition](#on-transition)                                              | Yes          |
-| always         | Always transitions.         | list of [transition](#transition)                                                    | Yes          |
-| localData      | Local data.                 | [data](#data)                                                                                  | Yes          |
-| persistentData | Persistent data.            | [data](#data)                                                                                  | Yes          |
-| staticData     | Static data.                | [data](#data)                                                                                  | Yes          |
-| virtual        | Virtual flag of the state.  | boolean                                                                                        | Yes          |
-| abstract       | Abstract flag of the state. | boolean                                                                                        | Yes          |
+| **Keyword**    | **Description**             | **Type**                                          | **Optional** |
+| -------------- | --------------------------- |---------------------------------------------------| ------------ |
+| name           | Name of the state.          | string                                            | No           |
+| initial        | Initial flag of the state.  | boolean                                           | Yes          |
+| terminal       | Terminal flag of the state. | boolean                                           | Yes          |
+| entry          | Entry actions.              | list of [action](#action)                         | Yes          |
+| exit           | Exit actions.               | list of [action](#action)                         | Yes          |
+| while          | While actions.              | list of [action](#action)                         | Yes          |
+| after          | After actions.              | list of [timeout action](#timeout-reset-action)   | Yes          |
+| on             | On event transitions.       | list of [on-transition](#on-transition)           | Yes          |
+| always         | Always transitions.         | list of [transition](#transition)                 | Yes          |
+| localData      | Local data.                 | [data](#data)                                     | Yes          |
+| persistentData | Persistent data.            | [data](#data)                                     | Yes          |
+| staticData     | Static data.                | [data](#data)                                     | Yes          |
 
 #### State Name
 
@@ -511,16 +453,6 @@ The _localData_, _persistentData_, and _staticData_ keywords allow for _lexicall
 local, persistent, and static data at the state machine level. Static data is unique to states and is
 available after re-entry of a state. Data described at the state level is accessible from the state machine
 and any component hierarchically below it, see [dynamic extent](#data-model-manipulation-and-scope).
-
-#### State Virtual
-
-The _virtual_ keyword marks a state as virtual, allowing it to be overridden within derived state machines.
-
-#### State Abstract
-
-The _abstract_ keyword marks a state as abstract, indicating that it must be overridden within derived state machines.
-
-- A state machine must be marked as abstract in order to have abstract states.
 
 ### Event
 
@@ -616,12 +548,12 @@ The _actions_ keyword is used to specify the actions executed when the transitio
 
 The following keywords can/must be provided in addition to the keywords:
 
-| **Keyword** | **Description**     | **Type**                                                                 | **Optional** |
-| ----------- | ------------------- | ------------------------------------------------------------------------ | ------------ |
-| target      | Target state name.  | [state name](#state-name)                                                | No           |
-| guards      | Guard conditions.   | list of [guard name](#guard-name) or [guard](#guard)                     | Yes          |
-| actions     | Transition actions. | list of [action name](#state-machine-named-actions) or [action](#action) | Yes          |
-| else        | Else target.        | [state name](#state-name)                                                | Yes          |
+| **Keyword** | **Description**     | **Type**                    | **Optional** |
+| ----------- | ------------------- |-----------------------------| ------------ |
+| target      | Target state name.  | [state name](#state-name)   | No           |
+| guards      | Guard conditions.   | list of [guard](#guard)     | Yes          |
+| actions     | Transition actions. | list of [action](#action)   | Yes          |
+| else        | Else target.        | [state name](#state-name)   | Yes          |
 
 #### On-Transition
 
@@ -693,7 +625,6 @@ Various types of action constructs exist in CSML. The following sections specify
 ```
 {
     type: 'invoke'
-    (name: 'action')?
     serviceType: 'serviceTypeName'
     (local: (true|false))?
     (input: [
@@ -736,7 +667,6 @@ The following keywords can/must be provided in addition to the keywords:
 | **Keyword** | **Description**        | **Type**                                          | **Optional**          |
 | ----------- | ---------------------- |---------------------------------------------------| --------------------- |
 | type        | Type of action.        | string                                            | No                    |
-| name        | Name of action.        | string                                            | Yes[\*](#action-name) |
 | serviceType | Service type name.     | string                                            | No                    |
 | local       | Local execution flag.  | boolean                                           | Yes                   |
 | input       | Input data.            | list of [variable](#variable)                     | Yes                   |
@@ -811,7 +741,6 @@ The following keywords can/must be provided in addition to the keywords (create 
 | **Keyword** | **Description**                      | **Type**              | **Optional**          |
 | ----------- | ------------------------------------ |-----------------------| --------------------- |
 | type        | Type of action.                      | string                | No                    |
-| name        | Name of action.                      | string                | Yes[\*](#action-name) |
 | variable    | Variable to create.                  | [variable](#variable) | No                    |
 | persistent  | Whether to create data persistently. | boolean               | Yes                   |
 
@@ -820,7 +749,6 @@ The following keywords can/must be provided in addition to the keywords (assign 
 | **Keyword** | **Description**                  | **Type**                                  | **Optional**          |
 | ----------- | -------------------------------- | ----------------------------------------- | --------------------- |
 | type        | Type of action.                  | string                                    | No                    |
-| name        | Name of action.                  | string                                    | Yes[\*](#action-name) |
 | variable    | Variable reference to assign to. | [variable reference](#variable-reference) | No                    |
 | value       | Value expression.                | [expression](#expression)                 | No                    |
 
@@ -829,7 +757,6 @@ The following keywords can/must be provided in addition to the keywords (delete 
 | **Keyword** | **Description**               | **Type**                                  | **Optional**          |
 | ----------- | ----------------------------- | ----------------------------------------- | --------------------- |
 | type        | Type of action.               | string                                    | No                    |
-| name        | Name of action.               | string                                    | Yes[\*](#action-name) |
 | variable    | Variable reference to delete. | [variable reference](#variable-reference) | No                    |
 
 ##### Data Action Variable
@@ -869,7 +796,6 @@ The following keywords can/must be provided in addition to the keywords (raise a
 | **Keyword** | **Description**     | **Type**        | **Optional**          |
 | ----------- | ------------------- | --------------- | --------------------- |
 | type        | Type of action.     | string          | No                    |
-| name        | Name of action.     | string          | Yes[\*](#action-name) |
 | event       | The event to raise. | [event](#event) | No                    |
 
 ##### Raise Event Action Event
@@ -900,19 +826,17 @@ Timeouts can be reset based on the _reset timeout_ action.
 
 The following keywords can/must be provided in addition to the keywords (timeout action construct):
 
-| **Keyword** | **Description**     | **Type**                                                                 | **Optional**          |
-| ----------- | ------------------- | ------------------------------------------------------------------------ | --------------------- |
-| type        | Type of action.     | string                                                                   | No                    |
-| name        | Name of action.     | string                                                                   | Yes[\*](#action-name) |
-| delay       | The event to raise. | [expression](#expression)                                                | No                    |
-| actions     | The event to raise. | list of [action name](#state-machine-named-actions) or [action](#action) | No                    |
+| **Keyword** | **Description**     | **Type**                    | **Optional**          |
+| ----------- | ------------------- |-----------------------------| --------------------- |
+| type        | Type of action.     | string                      | No                    |
+| delay       | The event to raise. | [expression](#expression)   | No                    |
+| actions     | The event to raise. | list of [action](#action)   | No                    |
 
 The following keywords can/must be provided in addition to the keywords (timeout reset action construct):
 
 | **Keyword** | **Description**              | **Type**                    | **Optional**          |
 | ----------- | ---------------------------- | --------------------------- | --------------------- |
 | type        | Type of action.              | string                      | No                    |
-| name        | Name of action.              | string                      | Yes[\*](#action-name) |
 | action      | The timeout action to reset. | [action name](#action-name) | No                    |
 
 ##### Timeout Action Delay
@@ -936,112 +860,6 @@ The _action_ keyword specifies the timeout action to reset. The action reference
 executed timeout action.
 
 - The action reference provided must be a previously executed timeout action.
-
-### State Machine Inheritance
-
-State machine inheritance can be achieved by using the [_extends_ keyword](#state-machine-extends) to a state machine. When a state machine
-extends another state machine, it inherits all its properties along the hierarchy of base state machines. Derived state
-machines can incorporate new behavior to the base state machine by introducing new properties within the
-relevant keywords. Additionally, a derived state machine can also override the properties of a state machine to alter
-behavior and allow for customization. State machine inheritance is transitive, enabling a cascade of extension where a
-state machine can extend another state machine, which can further extend additional state machines, thus creating a
-hierarchical chain of inheritance.
-```mermaid
-stateDiagram-v2
-    SM5 --> SM4: extends
-    SM4 --> SM2: extends
-    SM3 --> SM2: extends
-    SM2 --> SM1: extends
-```
-
-It is not possible to delete or rename properties of the base state machine within derived state machines to .
-
-State machine inheritance enables a hierarchy of state machine classes and promotes code-reusability and thus decreased
-code duplication. It also promotes the creation of more modular and organized state machines.
-
-The following properties are affected by inheritance:
-
-- Context variables: Local and persistent context variables can be redefined to modify
-  their initial value. New context variables can be added within the respective keywords.
-- Named actions and guards: Named actions and guards can be redefined to change them into other actions or guards.
-  This enables modifications to state behavior without overriding the actual states.
-- _abstract_ flag: The abstract flag is never inherited but can be redefined to allow an abstract state machine to
-  extend an abstract state machine.
-- States: States are overridden by redefining them inside the [_states_ collection](#state-machine-states).
-  A state can only be overridden if it is defined as either [_abstract_](#state-abstract) or
-  [_virtual_](#state-virtual). Derived states keep the behavior from their base state, and allow adding new behavior to
-  them by redefining the states properties. It is also allowed to add new states to the state machine. Overriding
-  states allows to override or extend the following state level properties:
-  - _initial_ and _terminal_ flags can be overridden to change their values.
-  - _entry_, _exit_, _while_, or _after_ actions can not be overridden inside the state construct but new actions can
-    be added by defining them inside the respective collections. It is possible to override actions by overriding
-    named actions of the state machine.
-  - _on_ transitions can be overridden by redefining a transition using the same event name. New _on_ transitions can
-    be added by using an event name which does not exist within the base states _on_ transitions.
-  - _always_ transitions can not be overridden but new _always_ transitions can be added.
-  - Local, persistent and static context variables can be redefined to modify their initial value. New context
-    variables can be added.
-  - _virtual_ flags are always derived and can not be overridden. If the base state was abstract, the derived state is
-    always virtual.
-  - _abstract_ flags are never derived except if the derived state machine is abstract and the derived abstract state
-    is not overridden.
-
-```mermaid
-stateDiagram-v2
-    SM1 : Base State Machine
-    state SM1 {
-        VS1 : Virtual State
-        note right of VS1 : Can be overridden
-        S1: State
-        note right of S1 : Can not be overridden
-    }
-    SM2 : Derived State Machine
-    state SM2 {
-        OS1 : Overridden or Derived Virtual State
-        S2 : Derived State
-        NS1 : New State
-    }
-    SM2 --> SM1: extends
-```
-
-### State Machine Abstraction
-
-State machine abstraction involves abstract state machines which can be defined by setting the
-[_abstract_ keyword](#state-machine-abstract) to boolean true. Abstract state machines serve as blueprints for their
-child state machines, providing a framework for defining common states, transitions, and behaviors. An abstract state
-machine can not be instantiated and must be extended by another non-abstract state machine to be used within the CSM.
-If an abstract state machine is nested it is also not instantiated during the instantiation of the nested state
-machines.
-```mermaid
-stateDiagram-v2
-    SM1 : Abstract Base State Machine
-    state SM1 {
-        AS1 : Abstract State
-        note right of AS1 : Must be overridden
-        VS1 : Virtual State
-        note right of VS1 : Can be overridden
-        S1: State
-        note right of S1 : Can not be overridden
-    }
-    note left of SM1 : Not instantiable
-    SM2 : Derived State Machine
-    state SM2 {
-      OAS1 : Overridden Abstract State
-      OS1 : Overridden or Derived Virtual State
-      S2 : Derived State
-      NS1 : New State
-    }
-    note left of SM2 : instantiable
-    SM2 --> SM1: extends
-```
-
-Abstract state machines are allowed to have abstract states, which are states consisting of only a name and
-the abstract keyword. When a non-abstract state machine extends an abstract state machine, it must implement all
-abstract states.
-
-Abstract state machines are particularly useful to define a hierarchy of state machines that share common properties
-and behaviors and thus promote reusability and reduce redundancy. They also enable control over which state machines
-should be instantiated and which state machines should be used for inheritance only.
 
 ## Memory
 
