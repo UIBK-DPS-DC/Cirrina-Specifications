@@ -82,7 +82,7 @@ open class StateMachineDescription extends StateOrStateMachineDescription {
     persistentContext: ContextDescription?
 }
 
-abstract class StateOrStateMachineDescription {}
+open class StateOrStateMachineDescription {}
 
 /// State construct, represents an atomic state of a state machine.
 ///
@@ -296,9 +296,9 @@ class RaiseActionDescription extends ActionDescription {
 
 /// Timeout action construct. Represents a timeout action.
 class TimeoutActionDescription extends ActionDescription {
+    type: Type = "timeout"
     /// The name of the timeout action.
     name: String
-    type: Type = "timeout"
     /// The delay until the timeout action is executed.
     delay: ExpressionDescription // Note: if Code Generation is working replace with Duration type
     /// The action to be executed when the timeout occurs.
