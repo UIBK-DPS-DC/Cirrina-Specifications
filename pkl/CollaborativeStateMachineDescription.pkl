@@ -102,8 +102,6 @@ open class StateMachineDescription {
 ///  <tr><td>localContext</td><td>Lexical description of the local context</td><td>No</td></tr>
 ///  <tr><td>persistentContext</td><td>Lexical description of the persistent context</td><td>No</td></tr>
 ///  <tr><td>staticContext</td><td>Lexical description of the static context</td><td>No</td></tr>
-///  <tr><td>virtual</td><td>Virtual state flag</td><td>No</td></tr>
-///  <tr><td>abstract</td><td>Abstract state flag</td><td>No</td></tr>
 /// </table>
 ///
 /// Example:
