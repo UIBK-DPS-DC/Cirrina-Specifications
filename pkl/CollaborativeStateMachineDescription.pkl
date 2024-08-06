@@ -60,6 +60,7 @@ typealias ExpressionDescription = String
 /// {
 ///   name: 'Collaborative State Machine Name',
 ///   states: [...],
+///   stateMachines: [...],
 ///   localContext: [...],
 ///   persistentContext: [...],
 ///   guards: [],
@@ -68,21 +69,20 @@ typealias ExpressionDescription = String
 /// </pre>
 ///
 /// @since CSML 0.1.
-open class StateMachineDescription extends StateOrStateMachineDescription {
+open class StateMachineDescription {
+    /// The name.
+    name: String
     /// The states.
     /// <p>
     /// At least one initial state must be provided.
     /// </p>
-    states: Listing<StateOrStateMachineDescription>
+    states: Listing<StateDescription>
+    /// The nested state machines of this state machine.
+    stateMachines: Listing<StateMachineDescription>
     /// The optional lexical declaration of local context variables.
     localContext: ContextDescription?
     /// The optional lexical declaration of persistent context variables.
     persistentContext: ContextDescription?
-}
-
-open class StateOrStateMachineDescription {
-    /// The name.
-    name: String
 }
 
 /// State construct, represents an atomic state of a state machine.
@@ -124,7 +124,9 @@ open class StateOrStateMachineDescription {
 /// </pre>
 ///
 /// @since CSML 0.1.
-open class StateDescription extends StateOrStateMachineDescription {
+open class StateDescription {
+    /// The name.
+    name: String
     /// The is initial flag. Indicating if this is the initial state of the state machine. Exactly one state must be the initial state of a
     /// state machine. If omitted, the state is not initial.
     initial: Boolean = false
