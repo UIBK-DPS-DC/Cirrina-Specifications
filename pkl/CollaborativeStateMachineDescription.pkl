@@ -19,7 +19,7 @@
 /// }
 /// </pre>
 /// 
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 @ModuleInfo { minPklVersion = "0.26.2" }
 module at.ac.uibk.dps.cirrina.csml.description.CollaborativeStateMachineDescription
 /// The name.
@@ -42,7 +42,7 @@ localContext: ContextDescription?
 persistentContext: ContextDescription?
 
 
-typealias Version = "0.1" | "0.2"
+typealias Version = "2.0"
 typealias ExpressionDescription = String
 
 /// State machine construct. Represents a state machine within a collaborative state machine.
@@ -68,7 +68,7 @@ typealias ExpressionDescription = String
 /// }
 /// </pre>
 ///
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 open class StateMachineDescription {
     /// The name.
     name: String
@@ -121,7 +121,7 @@ open class StateMachineDescription {
 /// }
 /// </pre>
 ///
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 open class StateDescription {
     /// The name.
     name: String
@@ -171,7 +171,7 @@ open class StateDescription {
 /// }
 /// </pre>
 ///
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 open class TransitionDescription {
     /// The optional target state name. If the target is omitted, the transition is internal.
     target: String?
@@ -200,7 +200,7 @@ open class TransitionDescription {
 /// }
 /// </pre>
 ///
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 open class GuardDescription {
     /// An expression.
     /// <p>
@@ -227,7 +227,7 @@ open class GuardDescription {
 /// }
 /// </pre>
 ///
-/// @since CSML 0.1.
+/// @since CSML 1.0.
 class OnTransitionDescription extends TransitionDescription {
     event: String
 }
