@@ -1,4 +1,4 @@
-Version 1.0
+Version 2.0
 
 This document is the Collaborative State Machine language specification.
 
